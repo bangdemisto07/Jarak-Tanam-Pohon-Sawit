@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kalkulator & Peta Tanam Sawit Pintar</title>
   <style>
     body {
@@ -71,8 +71,6 @@
     .btn-print:hover { background-color: #b45309; }
     .btn-wa { background-color: #25d366; color: white; }
     .btn-wa:hover { background-color: #128c7e; }
-    .btn-donasi { background-color: #e11d48; color: white; }
-    .btn-donasi:hover { background-color: #be123c; }
     
     .results-card {
       background: #eef7f2;
@@ -105,7 +103,6 @@
       margin: 0 auto;
     }
 
-    /* KARTU DONASI ELEGAN */
     .donation-box {
       background: linear-gradient(135deg, #fff1f2, #ffe4e6);
       border: 2px dashed #fb7185;
@@ -207,23 +204,20 @@
     <canvas id="sawitCanvas"></canvas>
   </div>
 
-  <!-- KOTAK DONASI / DUKUNGAN UNTUK PENGEMBANG -->
   <div class="donation-box">
     <h3>Dukung Pengembangan Aplikasi Ini</h3>
     <p>
       Aplikasi ini dibuat secara mandiri dan <b>100% gratis</b> untuk memajukan para petani kelapa sawit Indonesia. 
-      Jika kalkulator dan peta ini membantu menghemat waktu serta tenaga Anda di kebun, 
-      Anda bisa menyisihkan sedikit rezeki atau mentraktir secangkir kopi bagi pengembang sebagai tanda dukungan. Terima kasih banyak!
+      Jika kalkulator dan peta ini membantu Anda di kebun, Anda bisa mentraktir secangkir kopi bagi pengembang sebagai tanda dukungan. Terima kasih banyak!
     </p>
-    <!-- GANTI LINK DI BAWAH INI DENGAN LINK SAWERIA/TRAKTEER/REKENING ANDA -->
-    <a href="https://teer.id/misto_misto" target="_blank" class="btn-traktir">
-      Traktir Kopi / Beri Donasi (Saweria/QRIS)
+    <a href="https://trakteer.id/misto_misto" target="_blank" class="btn-traktir">
+      Traktir Kopi / Beri Donasi (Trakteer/QRIS)
     </a>
   </div>
 </div>
 
 <script>
-  let teksHasilWA = ""; // Variabel penyimpan teks untuk dibagikan ke WhatsApp
+  let teksHasilWA = "";
 
   function gantiModeLahan() {
     const mode = document.getElementById('modeLahan').value;
@@ -252,7 +246,6 @@
     const Batas = parseFloat(document.getElementById('batas').value);
     const S = parseFloat(document.getElementById('jarak').value);
 
-    // Validasi Sempadan
     if (P <= (2 * Batas) || L <= (2 * Batas)) {
       alert("Luas lahan efektif terlalu kecil setelah dikurangi batas sempadan!");
       return;
@@ -304,7 +297,6 @@
       yIndex++;
     }
 
-    // Kalkulasi Sisa Lahan Pinggir
     const sisaBawah = LEfektif - lastY;
     let sisaKananGenap = 0;
     let sisaKananGanjil = 0;
@@ -318,12 +310,10 @@
       sisaKananGanjil = PEfektif - lastXGanjil;
     }
 
-    // Estimasi SPH & Bibit Cadangan (10% Sulaman)
     const luasLahanHa = (P * L) / 10000;
     const sph = totalPohon / luasLahanHa;
-    const bibitSulaman = Math.ceil(totalPohon * 1.10); // +10% sulaman
+    const bibitSulaman = Math.ceil(totalPohon * 1.10);
 
-    // Menampilkan Ringkasan Teks
     document.getElementById('ringkasan').style.display = 'block';
     
     if (mode === 'bukit') {
@@ -344,7 +334,6 @@
         `- <b>Pergeseran Menjorok Antar Teras (Zig-zag):</b> <b>${SetengahSisi.toFixed(2)} Meter</b><br>` +
         `- <b>Jarak Pokok Jauh Searah (Teras 1 ke Teras 3):</b> <b>${JarakPokokJauh.toFixed(2)} Meter</b>`;
 
-      // Siapkan teks untuk WA
       teksHasilWA = `*HASIL HITUNGAN TATA TANAM SAWIT (MODE BUKIT BERTERAS)*\n` +
         `----------------------------------------\n` +
         `- Luas Lahan: ${P}m x ${L}m (${luasLahanHa.toFixed(2)} Ha)\n` +
@@ -375,7 +364,6 @@
         `- Jarak Tegak Lurus Antar Baris = <b>${TinggiBaris.toFixed(2)} Meter</b><br>` +
         `- Jarak Antar Pokok Jauh (Selang Baris B1 ke B3) = <b>${JarakPokokJauh.toFixed(2)} Meter (~15.6 M)</b>`;
 
-      // Siapkan teks untuk WA
       teksHasilWA = `*HASIL HITUNGAN TATA TANAM SAWIT (MATA LIMA LAHAN DATAR)*\n` +
         `----------------------------------------\n` +
         `- Luas Lahan: ${P}m x ${L}m (${luasLahanHa.toFixed(2)} Ha)\n` +
@@ -405,7 +393,6 @@
     const canvas = document.getElementById('sawitCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Anti Blur: Support Retina / HiDPI
     const dpr = window.devicePixelRatio || 1;
     const baseWidth = 1150;
     const baseHeight = 800;
@@ -523,7 +510,6 @@
       ctx.restore();
     }
 
-    // A. Label Ukuran Luar Lahan
     let labelPanjang = (mode === 'bukit')
       ? `PANJANG TOTAL = ${P} METER [SOP BUKIT TERAS KONTUR]`
       : `PANJANG TOTAL = ${P} METER [MATA LIMA LAHAN DATAR]`;
@@ -535,7 +521,6 @@
     drawBadgeText(`LEBAR TOTAL = ${L} METER`, 0, 0, '#0f172a');
     ctx.restore();
 
-    // B. Label Batas Sempadan
     if (Batas > 0) {
       drawDashedDimensionLine(
         toCanvasX(0), toCanvasY(Batas / 2),
@@ -549,7 +534,6 @@
       );
     }
 
-    // C. NOMOR BARIS / TERAS
     const awalanKode = (mode === 'bukit') ? 'T' : 'B';
     for (let r = 0; r < perBaris.length; r++) {
       if (perBaris[r].length > 0) {
@@ -575,10 +559,7 @@
       }
     }
 
-    // D. PANDUAN UKURAN LAPANGAN TERPISAH (BEBAS TABRAKAN)
     if (perBaris.length >= 2 && perBaris[0].length >= 2) {
-      
-      // 1. ZONA KIRI: Jarak Dalam Teras / Baris
       let pA1 = perBaris[0][0]; 
       let pA2 = perBaris[0][1]; 
       let pB1 = perBaris[1][0]; 
@@ -605,7 +586,6 @@
         txtSisi, '#059669', 'center', 0, -14
       );
 
-      // Pergeseran Menjorok
       if (pB1.x !== pA1.x) {
         let offsetBotY = toCanvasY(pB1.y) + 24;
         ctx.save();
@@ -630,7 +610,6 @@
         );
       }
 
-      // 2. ZONA TENGAH-KIRI: Jarak Antar Teras / Baris
       let colTengah = Math.min(2, perBaris[1].length - 1);
       let pB_tengah = perBaris[1][colTengah]; 
 
@@ -644,7 +623,6 @@
         txtBaris, '#d97706', 'right', -10, 0
       );
 
-      // 3. ZONA KANAN JAUH: Jarak Pokok Jauh (T1-T3 atau B1-B3)
       if (perBaris.length >= 3 && perBaris[0].length >= 3 && perBaris[2].length >= 3) {
         let totalCols = Math.min(perBaris[0].length, perBaris[2].length);
         let colKanan = Math.max(2, totalCols - 3);
@@ -665,7 +643,6 @@
       }
     }
 
-    // E. Indikator Sisa Lahan
     if (perBaris.length > 0) {
       let lastRow = perBaris[perBaris.length - 1];
       if (lastRow.length > 0 && sisaBawah > 0.05) {
