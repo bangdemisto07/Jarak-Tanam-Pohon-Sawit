@@ -1,25 +1,699 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lening Pohon Sawit (Jarak Tanam Pohon Sawit)</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Kalkulator & Peta Tanam Sawit Pintar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 15px;
+      background-color: #f4f7f6;
+      color: #333;
+    }
+    .container {
+      max-width: 1150px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    h2 {
+      color: #2c6e49;
+      border-bottom: 2px solid #2c6e49;
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      background-color: #fff;
+    }
+    .btn-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-submit { background-color: #2c6e49; color: white; }
+    .btn-submit:hover { background-color: #1e4b32; }
+    .btn-print { background-color: #d97706; color: white; }
+    .btn-print:hover { background-color: #b45309; }
+    .btn-wa { background-color: #25d366; color: white; }
+    .btn-wa:hover { background-color: #128c7e; }
+    .btn-donasi { background-color: #e11d48; color: white; }
+    .btn-donasi:hover { background-color: #be123c; }
+    
+    .results-card {
+      background: #eef7f2;
+      border-left: 5px solid #2c6e49;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+    }
+    .results-card p {
+      margin: 6px 0;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    
+    .canvas-container {
+      text-align: center;
+      background-color: #ffffff;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-bottom: 25px;
+    }
+    canvas {
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* KARTU DONASI ELEGAN */
+    .donation-box {
+      background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+      border: 2px dashed #fb7185;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 25px;
+    }
+    .donation-box h3 {
+      margin-top: 0;
+      color: #be123c;
+    }
+    .donation-box p {
+      color: #4c0519;
+      font-size: 14px;
+      max-width: 700px;
+      margin: 0 auto 15px auto;
+      line-height: 1.5;
+    }
+    .btn-traktir {
+      background-color: #e11d48;
+      color: white;
+      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-weight: bold;
+      display: inline-block;
+      box-shadow: 0 4px 10px rgba(225, 29, 72, 0.3);
+      transition: 0.2s;
+    }
+    .btn-traktir:hover {
+      background-color: #be123c;
+      transform: translateY(-2px);
+    }
+
+    @media print {
+      body { background: white; margin: 0; }
+      .container { box-shadow: none; width: 100%; max-width: none; padding: 0; }
+      .btn-container, .form-grid, .donation-box { display: none; }
+      canvas { max-width: 100%; height: auto; }
+    }
+  </style>
 </head>
 <body>
-    <iframe src="https://script.google.com/macros/s/AKfycbxhAj8f1q53k9j1QL2wdmJfpCn4ViCEQ2HOtnh44jkwdznC_NCdKjc9WqKd_OaIXeSK/exec"></iframe>
+
+<div class="container">
+  <h2>Kalkulator & Peta Panduan Tanam Sawit Pintar</h2>
+  
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="modeLahan">Kondisi Topografi / Mode Lahan:</label>
+      <select id="modeLahan" onchange="gantiModeLahan()">
+        <option value="datar">Lahan Datar (Sistem Mata Lima 9m x 9m)</option>
+        <option value="bukit">Lahan Berbukit (SOP Teras Kontur 7.8m x 9.5m)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="panjang">Panjang Lahan (Meter):</label>
+      <input type="number" id="panjang" value="100" min="1">
+    </div>
+    <div class="form-group">
+      <label for="lebar">Lebar Lahan (Meter):</label>
+      <input type="number" id="lebar" value="80" min="1">
+    </div>
+    <div class="form-group">
+      <label for="batas">Batas Sempadan Pinggir (Meter):</label>
+      <input type="number" id="batas" value="4" min="0">
+    </div>
+
+    <div class="form-group">
+      <label for="jarak" id="label-jarak">Jarak Tanam / Sisi Segitiga (Meter):</label>
+      <input type="number" id="jarak" value="9" min="1" step="0.1">
+    </div>
+
+    <div class="form-group" id="group-jarak-teras" style="display: none;">
+      <label for="jarakTeras">Jarak Antar Teras / Tebing (Meter):</label>
+      <input type="number" id="jarakTeras" value="9.5" min="1" step="0.1">
+    </div>
+  </div>
+
+  <div class="btn-container">
+    <button class="btn-submit" onclick="prosesKalkulasi()">Hitung & Visualisasikan</button>
+    <button class="btn-print" onclick="window.print()">Cetak Peta Lapangan</button>
+    <button class="btn-wa" onclick="bagikanKeWA()">Kirim Ringkasan ke WhatsApp</button>
+  </div>
+
+  <div class="results-card" id="ringkasan" style="display:none;">
+    <h3 style="margin-top:0; color:#1e4b32;" id="res-judul">Ringkasan Hasil Perhitungan Lapangan:</h3>
+    <p id="res-total"></p>
+    <p id="res-sph"></p>
+    <p id="res-bibit"></p>
+    <p id="res-efektif"></p>
+    <p id="res-sisa"></p>
+    <p id="res-rumus"></p>
+  </div>
+
+  <div class="canvas-container">
+    <canvas id="sawitCanvas"></canvas>
+  </div>
+
+  <!-- KOTAK DONASI / DUKUNGAN UNTUK PENGEMBANG -->
+  <div class="donation-box">
+    <h3>Dukung Pengembangan Aplikasi Ini</h3>
+    <p>
+      Aplikasi ini dibuat secara mandiri dan <b>100% gratis</b> untuk memajukan para petani kelapa sawit Indonesia. 
+      Jika kalkulator dan peta ini membantu menghemat waktu serta tenaga Anda di kebun, 
+      Anda bisa menyisihkan sedikit rezeki atau mentraktir secangkir kopi bagi pengembang sebagai tanda dukungan. Terima kasih banyak!
+    </p>
+    <!-- GANTI LINK DI BAWAH INI DENGAN LINK SAWERIA/TRAKTEER/REKENING ANDA -->
+    <a href="https://teer.id/misto_misto" target="_blank" class="btn-traktir">
+      Traktir Kopi / Beri Donasi (Saweria/QRIS)
+    </a>
+  </div>
+</div>
+
+<script>
+  let teksHasilWA = ""; // Variabel penyimpan teks untuk dibagikan ke WhatsApp
+
+  function gantiModeLahan() {
+    const mode = document.getElementById('modeLahan').value;
+    const inputJarak = document.getElementById('jarak');
+    const labelJarak = document.getElementById('label-jarak');
+    const groupJarakTeras = document.getElementById('group-jarak-teras');
+    const inputJarakTeras = document.getElementById('jarakTeras');
+
+    if (mode === 'bukit') {
+      inputJarak.value = 7.8;
+      labelJarak.innerText = "Jarak Dalam Teras / Searah Jalur (Meter):";
+      inputJarakTeras.value = 9.5;
+      groupJarakTeras.style.display = 'flex';
+    } else {
+      inputJarak.value = 9.0;
+      labelJarak.innerText = "Jarak Tanam / Sisi Segitiga (Meter):";
+      groupJarakTeras.style.display = 'none';
+    }
+    prosesKalkulasi();
+  }
+
+  function prosesKalkulasi() {
+    const mode = document.getElementById('modeLahan').value;
+    const P = parseFloat(document.getElementById('panjang').value);
+    const L = parseFloat(document.getElementById('lebar').value);
+    const Batas = parseFloat(document.getElementById('batas').value);
+    const S = parseFloat(document.getElementById('jarak').value);
+
+    // Validasi Sempadan
+    if (P <= (2 * Batas) || L <= (2 * Batas)) {
+      alert("Luas lahan efektif terlalu kecil setelah dikurangi batas sempadan!");
+      return;
+    }
+
+    const PEfektif = P - (2 * Batas);
+    const LEfektif = L - (2 * Batas);
+
+    let SetengahSisi = 0;
+    let TinggiBaris = 0;
+    let JarakPokokJauh = 0;
+
+    if (mode === 'bukit') {
+      const jarakTerasInput = parseFloat(document.getElementById('jarakTeras').value);
+      SetengahSisi = S / 2;
+      TinggiBaris = jarakTerasInput;
+      JarakPokokJauh = 2 * TinggiBaris;
+    } else {
+      SetengahSisi = S / 2;
+      TinggiBaris = Math.sqrt(Math.pow(S, 2) - Math.pow(SetengahSisi, 2));
+      JarakPokokJauh = 2 * TinggiBaris;
+    }
+
+    let totalPohon = 0;
+    let daftarPohon = [];
+    let perBaris = []; 
+
+    let yIndex = 0;
+    let lastY = 0;
+
+    for (let y = 0; y <= LEfektif + 0.01; y += TinggiBaris) {
+      let isRowGanjil = (yIndex % 2 !== 0);
+      let startX = isRowGanjil ? SetengahSisi : 0;
+      let barisIni = [];
+
+      for (let x = startX; x <= PEfektif + 0.01; x += S) {
+        let pData = {
+          x: x + Batas,
+          y: y + Batas,
+          row: yIndex,
+          isOffset: isRowGanjil
+        };
+        daftarPohon.push(pData);
+        barisIni.push(pData);
+        totalPohon++;
+      }
+      perBaris.push(barisIni);
+      lastY = y;
+      yIndex++;
+    }
+
+    // Kalkulasi Sisa Lahan Pinggir
+    const sisaBawah = LEfektif - lastY;
+    let sisaKananGenap = 0;
+    let sisaKananGanjil = 0;
+
+    if (perBaris.length > 0 && perBaris[0].length > 0) {
+      let lastXGenap = perBaris[0][perBaris[0].length - 1].x - Batas;
+      sisaKananGenap = PEfektif - lastXGenap;
+    }
+    if (perBaris.length > 1 && perBaris[1].length > 0) {
+      let lastXGanjil = perBaris[1][perBaris[1].length - 1].x - Batas;
+      sisaKananGanjil = PEfektif - lastXGanjil;
+    }
+
+    // Estimasi SPH & Bibit Cadangan (10% Sulaman)
+    const luasLahanHa = (P * L) / 10000;
+    const sph = totalPohon / luasLahanHa;
+    const bibitSulaman = Math.ceil(totalPohon * 1.10); // +10% sulaman
+
+    // Menampilkan Ringkasan Teks
+    document.getElementById('ringkasan').style.display = 'block';
+    
+    if (mode === 'bukit') {
+      document.getElementById('res-judul').innerText = "Ringkasan Hasil Perhitungan (Mode SOP Teras Kontur Bukit):";
+      document.getElementById('res-total').innerHTML = `<b>Total Kapasitas Pohon:</b> ${totalPohon} Batang Sawit (${perBaris.length} Jalur Teras)`;
+      document.getElementById('res-sph').innerHTML = `<b>Estimasi Kepadatan (SPH):</b> ${sph.toFixed(1)} Batang/Ha (Luas: ${luasLahanHa.toFixed(2)} Ha)`;
+      document.getElementById('res-bibit').innerHTML = `<b>Rekomendasi Pemesanan Bibit (+10% Sulaman):</b> <b>${bibitSulaman} Pokok</b> (Cadangan: ${bibitSulaman - totalPohon} pokok)`;
+      document.getElementById('res-efektif').innerHTML = `<b>Dimensi Efektif Tanam:</b> ${PEfektif.toFixed(1)}m x ${LEfektif.toFixed(1)}m (Sempadan: ${Batas}m)`;
+      
+      document.getElementById('res-sisa').innerHTML = `<b>Sisa Lahan Tidak Terpakai Pohon:</b><br>` +
+        `- Sisa Tebing Bawah: <b>${sisaBawah.toFixed(2)} Meter</b> (Bisa untuk saluran rorak air)<br>` +
+        `- Sisa Ujung Teras Lurus: <b>${sisaKananGenap.toFixed(2)} Meter</b><br>` +
+        `- Sisa Ujung Teras Menjorok: <b>${sisaKananGanjil.toFixed(2)} Meter</b>`;
+
+      document.getElementById('res-rumus').innerHTML = `<b>Panduan Pengukuran Lapangan (SOP Bukit Berteras):</b><br>` + 
+        `- <b>Jarak Dalam Teras (Searah Jalur):</b> <b>${S.toFixed(2)} Meter</b><br>` +
+        `- <b>Jarak Antar Teras (Vertikal Tebing):</b> <b>${TinggiBaris.toFixed(2)} Meter</b><br>` +
+        `- <b>Pergeseran Menjorok Antar Teras (Zig-zag):</b> <b>${SetengahSisi.toFixed(2)} Meter</b><br>` +
+        `- <b>Jarak Pokok Jauh Searah (Teras 1 ke Teras 3):</b> <b>${JarakPokokJauh.toFixed(2)} Meter</b>`;
+
+      // Siapkan teks untuk WA
+      teksHasilWA = `*HASIL HITUNGAN TATA TANAM SAWIT (MODE BUKIT BERTERAS)*\n` +
+        `----------------------------------------\n` +
+        `- Luas Lahan: ${P}m x ${L}m (${luasLahanHa.toFixed(2)} Ha)\n` +
+        `- Total Pohon: ${totalPohon} Batang (${perBaris.length} Jalur Teras)\n` +
+        `- Kepadatan (SPH): ${sph.toFixed(1)} Pokok/Ha\n` +
+        `- Pesan Bibit (+10% Sulaman): ${bibitSulaman} Pokok\n` +
+        `- Jarak Dalam Teras: ${S} Meter\n` +
+        `- Jarak Antar Teras: ${TinggiBaris.toFixed(2)} Meter\n` +
+        `- Jarak Jauh (T1-T3): ${JarakPokokJauh.toFixed(2)} Meter\n` +
+        `----------------------------------------\n` +
+        `Dihitung otomatis via Aplikasi Peta Sawit Pintar.`;
+
+    } else {
+      document.getElementById('res-judul').innerText = "Ringkasan Hasil Perhitungan (Mode Lahan Datar Mata Lima):";
+      document.getElementById('res-total').innerHTML = `<b>Total Kapasitas Pohon:</b> ${totalPohon} Batang Sawit (${perBaris.length} Baris)`;
+      document.getElementById('res-sph').innerHTML = `<b>Estimasi Kepadatan (SPH):</b> ${sph.toFixed(1)} Batang/Ha (Luas: ${luasLahanHa.toFixed(2)} Ha)`;
+      document.getElementById('res-bibit').innerHTML = `<b>Rekomendasi Pemesanan Bibit (+10% Sulaman):</b> <b>${bibitSulaman} Pokok</b> (Cadangan: ${bibitSulaman - totalPohon} pokok)`;
+      document.getElementById('res-efektif').innerHTML = `<b>Dimensi Efektif Tanam:</b> ${PEfektif.toFixed(1)}m x ${LEfektif.toFixed(1)}m (Sempadan: ${Batas}m)`;
+      
+      document.getElementById('res-sisa').innerHTML = `<b>Sisa Lahan Tidak Terpakai Pohon:</b><br>` +
+        `- Sisa Batas Bawah: <b>${sisaBawah.toFixed(2)} Meter</b><br>` +
+        `- Sisa Batas Kanan Baris Lurus: <b>${sisaKananGenap.toFixed(2)} Meter</b><br>` +
+        `- Sisa Batas Kanan Baris Menjorok: <b>${sisaKananGanjil.toFixed(2)} Meter</b>`;
+
+      document.getElementById('res-rumus').innerHTML = `<b>Panduan Pengukuran Lapangan (Pola Mata Lima 9m x 9m):</b><br>` + 
+        `- Jarak Antar Pohon Sejajar = <b>${S.toFixed(2)} Meter</b><br>` +
+        `- Pergeseran Menjorok Baris Ganjil = <b>${SetengahSisi.toFixed(2)} Meter</b><br>` +
+        `- Jarak Tegak Lurus Antar Baris = <b>${TinggiBaris.toFixed(2)} Meter</b><br>` +
+        `- Jarak Antar Pokok Jauh (Selang Baris B1 ke B3) = <b>${JarakPokokJauh.toFixed(2)} Meter (~15.6 M)</b>`;
+
+      // Siapkan teks untuk WA
+      teksHasilWA = `*HASIL HITUNGAN TATA TANAM SAWIT (MATA LIMA LAHAN DATAR)*\n` +
+        `----------------------------------------\n` +
+        `- Luas Lahan: ${P}m x ${L}m (${luasLahanHa.toFixed(2)} Ha)\n` +
+        `- Total Pohon: ${totalPohon} Batang (${perBaris.length} Baris)\n` +
+        `- Kepadatan (SPH): ${sph.toFixed(1)} Pokok/Ha\n` +
+        `- Pesan Bibit (+10% Sulaman): ${bibitSulaman} Pokok\n` +
+        `- Jarak Antar Pohon: ${S} Meter\n` +
+        `- Jarak Antar Baris: ${TinggiBaris.toFixed(2)} Meter\n` +
+        `- Jarak Pokok Jauh (B1-B3): ${JarakPokokJauh.toFixed(2)} Meter\n` +
+        `----------------------------------------\n` +
+        `Dihitung otomatis via Aplikasi Peta Sawit Pintar.`;
+    }
+
+    gambarVisualisasi(mode, P, L, Batas, S, SetengahSisi, TinggiBaris, JarakPokokJauh, daftarPohon, perBaris, sisaBawah, sisaKananGenap);
+  }
+
+  function bagikanKeWA() {
+    if (!teksHasilWA) {
+      alert("Silakan klik 'Hitung & Visualisasikan' terlebih dahulu!");
+      return;
+    }
+    const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(teksHasilWA);
+    window.open(url, '_blank');
+  }
+
+  function gambarVisualisasi(mode, P, L, Batas, S, SetengahSisi, TinggiBaris, JarakPokokJauh, daftarPohon, perBaris, sisaBawah, sisaKananGenap) {
+    const canvas = document.getElementById('sawitCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Anti Blur: Support Retina / HiDPI
+    const dpr = window.devicePixelRatio || 1;
+    const baseWidth = 1150;
+    const baseHeight = 800;
+
+    canvas.width = baseWidth * dpr;
+    canvas.height = baseHeight * dpr;
+    canvas.style.width = '100%';
+    canvas.style.maxWidth = `${baseWidth}px`;
+    canvas.style.height = 'auto';
+
+    ctx.resetTransform();
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, baseWidth, baseHeight);
+
+    const padLeft = 145; 
+    const padRight = 115;
+    const padTop = 95;
+    const padBottom = 95;
+    const drawWidth = baseWidth - padLeft - padRight;
+    const drawHeight = baseHeight - padTop - padBottom;
+
+    const scale = Math.min(drawWidth / P, drawHeight / L);
+
+    function toCanvasX(m) { return padLeft + (m * scale); }
+    function toCanvasY(m) { return padTop + (m * scale); }
+
+    // 1. GARIS BATAS LAHAN & SEMPADAN
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(toCanvasX(0), toCanvasY(0), P * scale, L * scale);
+
+    ctx.strokeStyle = '#2563eb';
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([6, 5]);
+    ctx.strokeRect(toCanvasX(Batas), toCanvasY(Batas), (P - 2 * Batas) * scale, (L - 2 * Batas) * scale);
+    ctx.setLineDash([]);
+
+    // 2. GARIS KISI PENGHUBUNG POHON
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 1.1;
+
+    for (let i = 0; i < daftarPohon.length; i++) {
+      let p1 = daftarPohon[i];
+      for (let j = i + 1; j < daftarPohon.length; j++) {
+        let p2 = daftarPohon[j];
+        let dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+        let targetDist = (mode === 'bukit') ? Math.hypot(SetengahSisi, TinggiBaris) : S;
+        if (Math.abs(dist - S) < 0.2 || Math.abs(dist - targetDist) < 0.2) {
+          ctx.beginPath();
+          ctx.moveTo(toCanvasX(p1.x), toCanvasY(p1.y));
+          ctx.lineTo(toCanvasX(p2.x), toCanvasY(p2.y));
+          ctx.stroke();
+        }
+      }
+    }
+
+    // 3. TITIK POHON SAWIT
+    for (let p of daftarPohon) {
+      ctx.beginPath();
+      ctx.arc(toCanvasX(p.x), toCanvasY(p.y), 4.8, 0, 2 * Math.PI);
+      ctx.fillStyle = (mode === 'bukit') ? '#0d9488' : '#16a34a'; 
+      ctx.fill();
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = '#064e3b';
+      ctx.stroke();
+    }
+
+    // 4. SELURUH TEKS & GARIS UKURAN
+    function drawBadgeText(text, x, y, color = '#1e293b', align = 'center') {
+      ctx.save();
+      ctx.font = 'bold 11px Arial';
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+
+      const metrics = ctx.measureText(text);
+      const bgW = metrics.width + 12;
+      const bgH = 19;
+      let startX = x - bgW / 2;
+      if (align === 'left') startX = x;
+      if (align === 'right') startX = x - bgW;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(startX, y - bgH / 2, bgW, bgH);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(startX, y - bgH / 2, bgW, bgH);
+
+      ctx.fillStyle = color;
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+
+    function drawDashedDimensionLine(x1, y1, x2, y2, text, color = '#dc2626', alignMode = 'center', offsetX = 0, offsetY = -14) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([5, 4]);
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.arc(x1, y1, 3.2, 0, 2 * Math.PI);
+      ctx.arc(x2, y2, 3.2, 0, 2 * Math.PI);
+      ctx.fill();
+
+      let midX = (x1 + x2) / 2 + offsetX;
+      let midY = (y1 + y2) / 2 + offsetY;
+
+      drawBadgeText(text, midX, midY, color, alignMode);
+      ctx.restore();
+    }
+
+    // A. Label Ukuran Luar Lahan
+    let labelPanjang = (mode === 'bukit')
+      ? `PANJANG TOTAL = ${P} METER [SOP BUKIT TERAS KONTUR]`
+      : `PANJANG TOTAL = ${P} METER [MATA LIMA LAHAN DATAR]`;
+    drawBadgeText(labelPanjang, toCanvasX(P / 2), toCanvasY(0) - 35, '#0f172a');
+    
+    ctx.save();
+    ctx.translate(toCanvasX(0) - 85, toCanvasY(L / 2));
+    ctx.rotate(-Math.PI / 2);
+    drawBadgeText(`LEBAR TOTAL = ${L} METER`, 0, 0, '#0f172a');
+    ctx.restore();
+
+    // B. Label Batas Sempadan
+    if (Batas > 0) {
+      drawDashedDimensionLine(
+        toCanvasX(0), toCanvasY(Batas / 2),
+        toCanvasX(Batas), toCanvasY(Batas / 2),
+        `${Batas}m`, '#2563eb', 'center', 0, -14
+      );
+      drawDashedDimensionLine(
+        toCanvasX(Batas / 2), toCanvasY(0),
+        toCanvasX(Batas / 2), toCanvasY(Batas),
+        `${Batas}m`, '#2563eb', 'center', 0, 0
+      );
+    }
+
+    // C. NOMOR BARIS / TERAS
+    const awalanKode = (mode === 'bukit') ? 'T' : 'B';
+    for (let r = 0; r < perBaris.length; r++) {
+      if (perBaris[r].length > 0) {
+        let pFirst = perBaris[r][0];
+        let posX = toCanvasX(0) - 35;
+        let posY = toCanvasY(pFirst.y);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(posX, posY, 11, 0, 2 * Math.PI);
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fill();
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.3;
+        ctx.stroke();
+
+        ctx.font = 'bold 10px Arial';
+        ctx.fillStyle = '#1e293b';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${awalanKode}${r + 1}`, posX, posY);
+        ctx.restore();
+      }
+    }
+
+    // D. PANDUAN UKURAN LAPANGAN TERPISAH (BEBAS TABRAKAN)
+    if (perBaris.length >= 2 && perBaris[0].length >= 2) {
+      
+      // 1. ZONA KIRI: Jarak Dalam Teras / Baris
+      let pA1 = perBaris[0][0]; 
+      let pA2 = perBaris[0][1]; 
+      let pB1 = perBaris[1][0]; 
+
+      let txtSisi = (mode === 'bukit') 
+        ? `Jarak Dalam Teras = ${S}m` 
+        : `Jarak Sisi = ${S}m`;
+
+      let offsetTopY = toCanvasY(pA1.y) - 25;
+      ctx.save();
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(toCanvasX(pA1.x), toCanvasY(pA1.y));
+      ctx.lineTo(toCanvasX(pA1.x), offsetTopY);
+      ctx.moveTo(toCanvasX(pA2.x), toCanvasY(pA2.y));
+      ctx.lineTo(toCanvasX(pA2.x), offsetTopY);
+      ctx.stroke();
+      ctx.restore();
+
+      drawDashedDimensionLine(
+        toCanvasX(pA1.x), offsetTopY,
+        toCanvasX(pA2.x), offsetTopY,
+        txtSisi, '#059669', 'center', 0, -14
+      );
+
+      // Pergeseran Menjorok
+      if (pB1.x !== pA1.x) {
+        let offsetBotY = toCanvasY(pB1.y) + 24;
+        ctx.save();
+        ctx.strokeStyle = '#7c3aed';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(toCanvasX(pA1.x), toCanvasY(pB1.y));
+        ctx.lineTo(toCanvasX(pA1.x), offsetBotY);
+        ctx.moveTo(toCanvasX(pB1.x), toCanvasY(pB1.y));
+        ctx.lineTo(toCanvasX(pB1.x), offsetBotY);
+        ctx.stroke();
+        ctx.restore();
+
+        let txtMenjorok = (mode === 'bukit')
+          ? `Menjorok Teras = ${SetengahSisi.toFixed(2)}m`
+          : `Menjorok = ${SetengahSisi.toFixed(2)}m`;
+
+        drawDashedDimensionLine(
+          toCanvasX(pA1.x), offsetBotY,
+          toCanvasX(pB1.x), offsetBotY,
+          txtMenjorok, '#7c3aed', 'center', 0, 14
+        );
+      }
+
+      // 2. ZONA TENGAH-KIRI: Jarak Antar Teras / Baris
+      let colTengah = Math.min(2, perBaris[1].length - 1);
+      let pB_tengah = perBaris[1][colTengah]; 
+
+      let txtBaris = (mode === 'bukit')
+        ? `Jarak Antar Teras = ${TinggiBaris.toFixed(2)}m`
+        : `Jarak Baris = ${TinggiBaris.toFixed(2)}m`;
+
+      drawDashedDimensionLine(
+        toCanvasX(pB_tengah.x), toCanvasY(perBaris[0][0].y),
+        toCanvasX(pB_tengah.x), toCanvasY(pB_tengah.y),
+        txtBaris, '#d97706', 'right', -10, 0
+      );
+
+      // 3. ZONA KANAN JAUH: Jarak Pokok Jauh (T1-T3 atau B1-B3)
+      if (perBaris.length >= 3 && perBaris[0].length >= 3 && perBaris[2].length >= 3) {
+        let totalCols = Math.min(perBaris[0].length, perBaris[2].length);
+        let colKanan = Math.max(2, totalCols - 3);
+        if (colKanan >= totalCols) colKanan = totalCols - 1;
+
+        let pA_kanan = perBaris[0][colKanan]; 
+        let pC_kanan = perBaris[2][colKanan]; 
+
+        let txtJauh = (mode === 'bukit')
+          ? `Jarak Pokok Jauh (T1-T3) = ${JarakPokokJauh.toFixed(2)}m`
+          : `Jarak Jauh (B1-B3) = ${JarakPokokJauh.toFixed(2)}m (~15.6m)`;
+
+        drawDashedDimensionLine(
+          toCanvasX(pA_kanan.x), toCanvasY(pA_kanan.y),
+          toCanvasX(pC_kanan.x), toCanvasY(pC_kanan.y),
+          txtJauh, '#0284c7', 'left', 12, 0
+        );
+      }
+    }
+
+    // E. Indikator Sisa Lahan
+    if (perBaris.length > 0) {
+      let lastRow = perBaris[perBaris.length - 1];
+      if (lastRow.length > 0 && sisaBawah > 0.05) {
+        let pMid = lastRow[Math.floor(lastRow.length / 2)];
+        let txtSisaBawah = (mode === 'bukit') 
+          ? `Sisa Tebing: ${sisaBawah.toFixed(2)}m` 
+          : `Sisa Bawah: ${sisaBawah.toFixed(2)}m`;
+        drawDashedDimensionLine(
+          toCanvasX(pMid.x), toCanvasY(pMid.y),
+          toCanvasX(pMid.x), toCanvasY(L - Batas),
+          txtSisaBawah, '#ea580c', 'left', 10, 0
+        );
+      }
+
+      let row0 = perBaris[0];
+      if (row0.length > 0 && sisaKananGenap > 0.05) {
+        let pLast = row0[row0.length - 1];
+        drawDashedDimensionLine(
+          toCanvasX(pLast.x), toCanvasY(pLast.y),
+          toCanvasX(P - Batas), toCanvasY(pLast.y),
+          `Sisa Kanan: ${sisaKananGenap.toFixed(2)}m`, '#ea580c', 'center', 0, -14
+        );
+      }
+    }
+  }
+
+  window.onload = prosesKalkulasi;
+</script>
+
 </body>
 </html>
